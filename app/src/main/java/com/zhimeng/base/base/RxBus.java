@@ -1,4 +1,4 @@
-package com.zhimeng.base;
+package com.zhimeng.base.base;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -8,6 +8,7 @@ import rx.subjects.Subject;
 /**
  * author:rongxianzhuo create at 2016/8/7
  * email: rongxianzhuo@gmail.com
+ * 事件队列
  */
 public class RxBus {
 
