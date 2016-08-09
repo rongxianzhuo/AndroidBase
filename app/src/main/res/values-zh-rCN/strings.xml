@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Base</string>
+    <string name="activity_crop_image_toolbar_title">编辑图片</string>
+    <string name="activity_crop_image_menu_ok">确定</string>
+</resources>

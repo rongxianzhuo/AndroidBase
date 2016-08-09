@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Base</string>
+    <string name="activity_crop_image_toolbar_title">Edit image</string>
+    <string name="activity_crop_image_menu_ok">OK</string>
 </resources>
