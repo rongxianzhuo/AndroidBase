@@ -81,13 +81,14 @@ public class BitmapUtil {
     public static void saveBitmap(String path, Bitmap image) {
         if (image == null) return;
         File f = new File(path);
-        try {
-            if (!f.exists() && !f.createNewFile()) {
-                Log.e("saveBitmap", "can not create file " + path);
-                return;
-            }
-        } catch (IOException e) {
-            Log.e("saveBitmap", e.getMessage());
+        File father = f.getParentFile();
+        if (father == null) {
+            Log.e("saveBitmap", "unknown error with path = " + path);
+            return;
+        }
+        if (!father.exists() && !father.mkdirs()) {
+            Log.e("saveBitmap", "can not create file " + path);
+            return;
         }
         FileOutputStream fOut;
         try {
@@ -186,9 +187,12 @@ public class BitmapUtil {
         if (scheme == null) data = uri.getPath();
         else if (ContentResolver.SCHEME_FILE.equals(scheme)) data = uri.getPath();
         else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            String path = uri.getPath();
+            String id = "";
+            for (int i = path.length() - 1; i > 0 && path.charAt(i) >= '0' && path.charAt(i) <= '9'; i--) id = "" + path.charAt(i) + id;
             Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     , new String[]{MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns._ID}
-                    , MediaStore.Images.ImageColumns._ID + "=" + uri.getPath().substring(uri.getPath().lastIndexOf(':') + 1), null, null);
+                    , MediaStore.Images.ImageColumns._ID + "=" + id, null, null);
             if (null != cursor) {
                 if (cursor.moveToFirst()) {
                     int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);

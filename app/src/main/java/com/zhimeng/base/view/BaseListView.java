@@ -161,10 +161,10 @@ public class BaseListView extends RelativeLayout {
     }
 
     /**
-     * 通知进行第一次加载
+     * 通知重新进行加载
      * BaseListView 会调用loadMore接口，不要在额外的地方加载数据
      */
-    public void notifyFirstLoading() {
+    public void notifyToRefresh() {
         if (listener == null) return;
         swipeRefreshLayout.post(new Runnable() {
             @Override

@@ -31,6 +31,10 @@ public class BaseActivity extends AppCompatActivity {
         listeners = new ArrayList<>();
     }
 
+    /**
+     * 监听onActivityResult接口，使用这个可以不重写onActivityResult方法
+     * @param listener listener
+     */
     public void addOnResultListener(OnResultListener listener) {
         listeners.add(listener);
     }
