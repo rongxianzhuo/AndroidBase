@@ -56,7 +56,6 @@ public class BitmapUtil {
     }
 
     public static Bitmap scale(Bitmap image, int newWidth, int newHeight) {
-        Log.e("rxz", "scale" + newWidth + " " + newHeight);
         int width = image.getWidth();
         int height = image.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -78,24 +77,24 @@ public class BitmapUtil {
         return baos.toByteArray();
     }
 
-    public static void saveBitmap(String path, Bitmap image) {
-        if (image == null) return;
+    public static boolean saveBitmap(String path, Bitmap image) {
+        if (image == null) return false;
         File f = new File(path);
         File father = f.getParentFile();
         if (father == null) {
             Log.e("saveBitmap", "unknown error with path = " + path);
-            return;
+            return false;
         }
         if (!father.exists() && !father.mkdirs()) {
             Log.e("saveBitmap", "can not create file " + path);
-            return;
+            return false;
         }
         FileOutputStream fOut;
         try {
             fOut = new FileOutputStream(f);
         } catch (FileNotFoundException e) {
             Log.e("saveBitmap", e.getMessage());
-            return;
+            return false;
         }
         image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
         try {
@@ -108,17 +107,7 @@ public class BitmapUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-    }
-
-    public static Bitmap readBitmap(String path) {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(path);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return BitmapFactory.decodeStream(fis);
+        return true;
     }
 
     /**
@@ -156,6 +145,13 @@ public class BitmapUtil {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
+    /**
+     * 读取图片
+     * @param path 文件路径
+     * @param maxSize 最大宽或高
+     * @param rotate 旋转角度
+     * @return 图片
+     */
     public static Bitmap readBitmap(String path, int maxSize, int rotate) {
         File file = new File(path);
         if (!file.exists()) return null;
@@ -171,7 +167,38 @@ public class BitmapUtil {
         }
         opts.inJustDecodeBounds = false;
         Bitmap image = BitmapFactory.decodeFile(path, opts);
-        return rotateImage(rotate, image);
+        if (rotate == 0) return image;
+        Bitmap toReturn = rotateImage(rotate, image);
+        image.recycle();
+        return toReturn;
+    }
+
+    /**
+     * 读取图片
+     * @param path 文件路径
+     * @param maxPix 最大像素（宽乘以高）
+     * @param rotate 旋转角度
+     * @return 图片
+     */
+    public static Bitmap readBitmapByMaxPix(String path, long maxPix, int rotate) {
+        File file = new File(path);
+        if (!file.exists()) return null;
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, opts);
+        // 计算图片缩放比例
+        long max = opts.outWidth * opts.outHeight;
+        opts.inSampleSize = 1;
+        while (max > maxPix) {
+            opts.inSampleSize = opts.inSampleSize * 2;
+            max = max / 4;
+        }
+        opts.inJustDecodeBounds = false;
+        Bitmap image = BitmapFactory.decodeFile(path, opts);
+        if (rotate == 0) return image;
+        Bitmap toReturn = rotateImage(rotate, image);
+        image.recycle();
+        return toReturn;
     }
 
     /**

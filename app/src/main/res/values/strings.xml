@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Base</string>
+
+    <!-- string for common -->
+    <string name="common_message">Message</string>
+
+    <!-- string for CropImageActivity -->
     <string name="activity_crop_image_toolbar_title">Edit image</string>
     <string name="activity_crop_image_menu_ok">OK</string>
+    <string name="activity_crop_waiting_cropping">Waiting for cropping</string>
+    <string name="activity_crop_waiting_reading">Waiting for reading</string>
 </resources>

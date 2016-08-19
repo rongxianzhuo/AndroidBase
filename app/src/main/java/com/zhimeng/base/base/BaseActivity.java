@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -59,11 +60,11 @@ public class BaseActivity extends AppCompatActivity {
      * @param message 正文消息
      * @param during 最长显示时间（毫秒）
      */
-    public void showProgressDialog(String title, String message, int during) {
+    public void showProgressDialog(@StringRes int title, @StringRes int message, int during) {
         if (progressDialog != null || isFinishing()) return;
         progressDialog = ProgressDialog.show(this
-                , title
-                , message
+                , getString(title)
+                , getString(message)
                 , false, false);
         final ProgressDialog mProgressDialog = progressDialog;
         new Handler().postDelayed(new Runnable(){

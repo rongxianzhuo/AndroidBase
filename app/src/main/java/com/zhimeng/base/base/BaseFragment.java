@@ -3,6 +3,7 @@ package com.zhimeng.base.base;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Handler;
+import android.support.annotation.StringRes;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,16 +18,18 @@ public class BaseFragment extends Fragment {
     private boolean isRunningForeground = false;
     private ArrayList<Runnable> uiUpdateList = new ArrayList<>();
 
+
     /**
      * 显示等待会话框
      * @param title 标题
      * @param message 正文消息
      * @param during 最长显示时间（毫秒）
      */
-    public void showProgressDialog(String title, String message, int during) {
+    public void showProgressDialog(@StringRes int title, @StringRes int message, int during) {
+        if (progressDialog != null || getActivity().isFinishing()) return;
         progressDialog = ProgressDialog.show(getActivity()
-                , title
-                , message
+                , getString(title)
+                , getString(message)
                 , false, false);
         final ProgressDialog mProgressDialog = progressDialog;
         new Handler().postDelayed(new Runnable(){
