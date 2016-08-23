@@ -24,7 +24,7 @@ public class BigImageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         alphaTitle();
-        setContentView(R.layout.activity_big_image);
+        setContentView(R.layout.zhimeng_activity_big_image);
         String url;
         try {
             url = getIntent().getStringExtra(URL_KEY);

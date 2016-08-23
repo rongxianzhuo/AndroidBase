@@ -11,6 +11,6 @@
         android:layout_marginRight="1dp"
         android:id="@+id/auto_pager_view_circle_413"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/view_auto_pager_circle_bg"/>
+        android:background="@drawable/zhimeng_view_auto_pager_circle_bg"/>
 
 </RelativeLayout>

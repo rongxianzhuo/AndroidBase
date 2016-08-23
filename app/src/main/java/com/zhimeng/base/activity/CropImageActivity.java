@@ -1,17 +1,11 @@
 package com.zhimeng.base.activity;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +16,6 @@ import com.zhimeng.base.util.BitmapUtil;
 import com.zhimeng.base.view.CropImageView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -56,7 +49,7 @@ public class CropImageActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crop_image);
+        setContentView(R.layout.zhimeng_activity_crop_image);
         imageTemp = getIntent().getStringExtra(IMAGE_PATH_KEY);
         if (imageTemp == null || imageTemp.isEmpty()) {
             finish();
@@ -91,7 +84,7 @@ public class CropImageActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_crop_image, menu);
+        getMenuInflater().inflate(R.menu.zhimeng_menu_crop_image, menu);
         return true;
     }
 

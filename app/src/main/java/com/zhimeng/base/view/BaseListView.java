@@ -49,7 +49,7 @@ public class BaseListView extends RelativeLayout {
 
     public BaseListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        LayoutInflater.from(context).inflate(R.layout.view_base_list, this, true);
+        LayoutInflater.from(context).inflate(R.layout.zhimeng_view_base_list, this, true);
         recyclerView = (RecyclerView) findViewById(R.id.base_list_view_list_127);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.base_list_view_swipe_layout_127);
         errorMessageView = (TextView) findViewById(R.id.base_list_view_msg_127);

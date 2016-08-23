@@ -67,8 +67,8 @@ public class AutoPagerView extends RelativeLayout {
     private ViewPager viewPager;
     private LinearLayout circleContainer;
     private View[] circleView;
-    private Drawable activeDrawable = getContext().getResources().getDrawable(R.drawable.view_auto_pager_active_circle_bg);
-    private Drawable commonDrawable = getContext().getResources().getDrawable(R.drawable.view_auto_pager_circle_bg);
+    private Drawable activeDrawable = getContext().getResources().getDrawable(R.drawable.zhimeng_view_auto_pager_active_circle_bg);
+    private Drawable commonDrawable = getContext().getResources().getDrawable(R.drawable.zhimeng_view_auto_pager_circle_bg);
 
     public AutoPagerView(Context context) {
         super(context);
@@ -97,12 +97,12 @@ public class AutoPagerView extends RelativeLayout {
     public void setup(final View[] views, final int duration) {
         if (views == null || views.length == 0) return;
 
-        activeDrawable = getContext().getResources().getDrawable(R.drawable.view_auto_pager_active_circle_bg);
-        commonDrawable = getContext().getResources().getDrawable(R.drawable.view_auto_pager_circle_bg);
+        activeDrawable = getContext().getResources().getDrawable(R.drawable.zhimeng_view_auto_pager_active_circle_bg);
+        commonDrawable = getContext().getResources().getDrawable(R.drawable.zhimeng_view_auto_pager_circle_bg);
 
         circleView = new View[views.length];
         for (int i = 0; i < views.length; i++) {
-            circleView[i] = LayoutInflater.from(getContext()) .inflate(R.layout.view_auto_pager_circle_container, circleContainer, false);
+            circleView[i] = LayoutInflater.from(getContext()) .inflate(R.layout.zhimeng_view_auto_pager_circle_container, circleContainer, false);
             circleContainer.addView(circleView[i]);
             circleView[i] = circleView[i].findViewById(R.id.auto_pager_view_circle_413);
         }
