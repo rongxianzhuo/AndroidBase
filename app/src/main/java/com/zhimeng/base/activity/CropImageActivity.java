@@ -63,13 +63,16 @@ public class CropImageActivity extends BaseActivity {
             return;
         }
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        if (getSupportActionBar() == null) {
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
+        else toolbar.setVisibility(View.GONE);
         cropImageView = (CropImageView) findViewById(R.id.cropView);
         cropImageView.setHandleColor(getResources().getColor(R.color.colorAccent));
         cropImageView.setFrameColor(getResources().getColor(R.color.colorAccent));

@@ -37,7 +37,7 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <com.quseit.letgo.view.CropImageView
+        <com.zhimeng.base.view.CropImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/cropView"
