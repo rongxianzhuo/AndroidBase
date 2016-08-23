@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+import rx.Subscriber;
+
 /**
  * author Xianzhuo Rong
  * time   2016/6/21.
@@ -25,6 +27,7 @@ public class BaseActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private ArrayList<Runnable> uiUpdateList = new ArrayList<>();
     private boolean isRunningForeground = false;
+    private ArrayList<Subscriber<Object>> subscribers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,5 +115,22 @@ public class BaseActivity extends AppCompatActivity {
     public void postUiRunnable(Runnable runnable) {
         if (isRunningForeground) runnable.run();
         else uiUpdateList.add(runnable);
+    }
+
+    /**
+     * 增加订阅者
+     * 调用此方法来为activity订阅可以帮助你在activity销毁时同时取消订阅
+     * @param subscriber 订阅者
+     */
+    public void subscribeRxBus(Subscriber<Object> subscriber) {
+        for (Subscriber m : subscribers) if (m == subscriber) return;
+        RxBus.toObservable().subscribe(subscriber);
+        subscribers.add(subscriber);
+    }
+
+    @Override
+    protected void onDestroy() {
+        for (Subscriber m : subscribers) if (m != null && !m.isUnsubscribed()) m.unsubscribe();
+        super.onDestroy();
     }
 }
