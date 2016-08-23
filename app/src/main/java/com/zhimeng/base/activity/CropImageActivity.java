@@ -95,7 +95,7 @@ public class CropImageActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.ok) {
-            showProgressDialog(R.string.common_message, R.string.activity_crop_waiting_cropping, 5000);
+            showProgressDialog(R.string.zhimeng_common_message, R.string.zhimeng_activity_crop_waiting_cropping, 5000);
             Observable.create(new Observable.OnSubscribe<Boolean>() {
                 @Override
                 public void call(Subscriber<? super Boolean> subscriber) {
@@ -126,7 +126,7 @@ public class CropImageActivity extends BaseActivity {
         postUiRunnable(new Runnable() {
             @Override
             public void run() {
-                showProgressDialog(R.string.common_message, R.string.activity_crop_waiting_reading, 5000);
+                showProgressDialog(R.string.zhimeng_common_message, R.string.zhimeng_activity_crop_waiting_reading, 5000);
                 Observable.create(new Observable.OnSubscribe<Bitmap>() {
                     @Override
                     public void call(Subscriber<? super Bitmap> subscriber) {

@@ -1,12 +1,11 @@
 <resources>
-    <string name="app_name">织梦</string>
 
     <!-- string for common -->
-    <string name="common_message">消息</string>
+    <string name="zhimeng_common_message">消息</string>
 
     <!-- string for CropImageActivity -->
-    <string name="activity_crop_image_toolbar_title">编辑图片</string>
-    <string name="activity_crop_image_menu_ok">确定</string>
-    <string name="activity_crop_waiting_cropping">正在裁剪图片</string>
-    <string name="activity_crop_waiting_reading">正在读取图片</string>
+    <string name="zhimeng_activity_crop_image_toolbar_title">编辑图片</string>
+    <string name="zhimeng_activity_crop_image_menu_ok">确定</string>
+    <string name="zhimeng_activity_crop_waiting_cropping">正在裁剪图片</string>
+    <string name="zhimeng_activity_crop_waiting_reading">正在读取图片</string>
 </resources>

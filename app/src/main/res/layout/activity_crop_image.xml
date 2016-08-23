@@ -31,7 +31,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:titleTextColor="#ffffff"
                 app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-                app:title="@string/activity_crop_image_toolbar_title"
+                app:title="@string/zhimeng_activity_crop_image_toolbar_title"
                 android:background="@color/colorPrimary"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
