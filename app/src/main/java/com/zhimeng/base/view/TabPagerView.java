@@ -8,7 +8,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
+
+import com.zhimeng.base.R;
 
 /**
  * author：rongxianzhuo on 2016/7/27 14:39
@@ -20,26 +24,24 @@ import android.widget.LinearLayout;
  */
 public class TabPagerView extends LinearLayout {
 
+    private View view;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
     private TabPagerView(Context context) {
         super(context);
-        setOrientation(VERTICAL);
-        tabLayout = new TabLayout(context);
-        viewPager = new ViewPager(context);
-        addView(tabLayout);
-        addView(viewPager);
+        init(context);
     }
 
     public TabPagerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setOrientation(VERTICAL);
-        tabLayout = new TabLayout(context, attrs);
-        viewPager = new ViewPager(context, attrs);
-        viewPager.setId(1);
-        addView(tabLayout);
-        addView(viewPager);
+        init(context);
+    }
+
+    private void init(Context context) {
+        view = LayoutInflater.from(context).inflate(R.layout.zhimeng_view_tab_pager, this, true);
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout_18534);
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager_18534);
     }
 
     /**
