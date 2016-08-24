@@ -8,4 +8,7 @@
     <string name="zhimeng_activity_crop_image_menu_ok">OK</string>
     <string name="zhimeng_activity_crop_waiting_cropping">Waiting for cropping</string>
     <string name="zhimeng_activity_crop_waiting_reading">Waiting for reading</string>
+    <string name="zhimeng_activity_crop_dialog_msg">Where are you going to get a photo?</string>
+    <string name="zhimeng_activity_crop_dialog_bt1">File</string>
+    <string name="zhimeng_activity_crop_dialog_bt2">Camera</string>
 </resources>

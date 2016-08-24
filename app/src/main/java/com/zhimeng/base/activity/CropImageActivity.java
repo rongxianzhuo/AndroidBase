@@ -1,11 +1,18 @@
 package com.zhimeng.base.activity;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,16 +34,12 @@ import rx.schedulers.Schedulers;
  * 编辑图片activity，调用其startActivity方法来启动它
  * 功能：
  * 启动后会根据情况进行拍照或选择本地文件，然后进行图片裁剪，最后将裁减图片保存到指定路径
- *
- * 注意事项：在启动activity前，必需确认app拥有读写权限，否则无法正常工作
+ * activity会自动检测并申请文件读写权限
  */
 public class CropImageActivity extends BaseActivity {
 
-    private static final String IMAGE_PATH_KEY = "image_path";
 
-    public static final String ORDER_TITLE = "title";
-    public static final String ORDER_SELECT_FROM_FILE = "file";
-    public static final String ORDER_SELECT_FROM_CAMERA = "camera";
+    private static final String IMAGE_PATH_KEY = "image_path";
     private static final long MAX_PIX = 1000 * 1000;//最大图片像素
 
     public static final int FROM_FILE = 1314;
@@ -45,6 +48,7 @@ public class CropImageActivity extends BaseActivity {
     private static Bitmap image;//当前图片
     private CropImageView cropImageView;
     private String imageTemp = "";
+    private AlertDialog.Builder dialogBuilder = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +75,7 @@ public class CropImageActivity extends BaseActivity {
         cropImageView.setFrameColor(getResources().getColor(R.color.colorAccent));
         cropImageView.setGuideColor(getResources().getColor(R.color.colorAccent));
         image = null;
-        if (getIntent().getStringExtra(ORDER_TITLE) == null || getIntent().getStringExtra(ORDER_TITLE).equals("")) openCamera();
-        else if (getIntent().getStringExtra(ORDER_TITLE).equals(ORDER_SELECT_FROM_FILE)) {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(intent, FROM_FILE);
-        }
-        else if (getIntent().getStringExtra(ORDER_TITLE).equals(ORDER_SELECT_FROM_CAMERA)) openCamera();
-        else openCamera();
+        showSelectImageDialog();
     }
 
     @Override
@@ -161,13 +157,65 @@ public class CropImageActivity extends BaseActivity {
      * 使用这个方法启动activity
      * @param activity 跳转起始activity
      * @param imagePath 截图完成后图片保存的路径
-     * @param fromCamera 是否从摄像机获取图片，默认是从手机中获取图片
      */
-    public static void startActivity(Activity activity, String imagePath, boolean fromCamera, int requestCode) {
+    public static void startActivity(Activity activity, String imagePath, int requestCode) {
         Intent intent = new Intent(activity, CropImageActivity.class);
         intent.putExtra(IMAGE_PATH_KEY, imagePath);
-        if (fromCamera) intent.putExtra(CropImageActivity.ORDER_TITLE, CropImageActivity.ORDER_SELECT_FROM_CAMERA);
-        else intent.putExtra(CropImageActivity.ORDER_TITLE, CropImageActivity.ORDER_SELECT_FROM_FILE);
         activity.startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * 检查并请求获取读写权限
+     * @return 是否拥有读写权限
+     */
+    private boolean checkLocatePermission() {
+        int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean result = checkCallPhonePermission  == PackageManager.PERMISSION_GRANTED;
+        if(!result) {
+            ActivityCompat.requestPermissions(this
+                    , new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS}
+                    , 0);
+        }
+        return result;
+    }
+
+    private void showSelectImageDialog() {
+        if (!checkLocatePermission()) return;
+        if (dialogBuilder == null) {
+            dialogBuilder = new AlertDialog.Builder(this);
+            dialogBuilder.setTitle(R.string.zhimeng_common_message);
+            dialogBuilder.setMessage(R.string.zhimeng_activity_crop_dialog_msg);
+            dialogBuilder.setPositiveButton(R.string.zhimeng_activity_crop_dialog_bt1, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(intent, FROM_FILE);
+                }
+            });
+            dialogBuilder.setNegativeButton(R.string.zhimeng_activity_crop_dialog_bt2, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    openCamera();
+                }
+            });
+            dialogBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    finish();
+                }
+            });
+        }
+        dialogBuilder.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if(checkCallPhonePermission  == PackageManager.PERMISSION_GRANTED) showSelectImageDialog();
+        else finish();
+
     }
 }
