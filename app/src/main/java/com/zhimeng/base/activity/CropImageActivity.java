@@ -154,7 +154,7 @@ public class CropImageActivity extends BaseActivity {
     }
 
     /**
-     * 使用这个方法启动activity
+     * 使用这个方法启动activity，请在原activity的onActivityResult方法中获取结果，若截图保存成功，则resultCode为 Activity.RESULT_OK
      * @param activity 跳转起始activity
      * @param imagePath 截图完成后图片保存的路径
      */
