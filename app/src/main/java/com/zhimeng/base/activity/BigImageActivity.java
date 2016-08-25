@@ -2,6 +2,7 @@ package com.zhimeng.base.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,8 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.facebook.drawee.drawable.ScalingUtils;
 import com.zhimeng.base.R;
-import com.zhimeng.base.view.ZoomImageView;
+import com.zhimeng.base.view.pdview.PhotoDraweeView;
 
 /**
  * 浏览大图activity，请调用提供的startActivity静态方法启动
@@ -34,9 +34,8 @@ public class BigImageActivity extends AppCompatActivity {
             finish();
             return;
         }
-        ZoomImageView imageView = (ZoomImageView) findViewById(R.id.zoom_view);
-        imageView.setImageURI(url);
-        imageView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
+        PhotoDraweeView imageView = (PhotoDraweeView) findViewById(R.id.zoom_view);
+        imageView.setPhotoUri(Uri.parse(url));
     }
 
     /**
