@@ -15,6 +15,7 @@ import com.zhimeng.base.view.pdview.PhotoDraweeView;
 
 /**
  * 浏览大图activity，请调用提供的startActivity静态方法启动
+ * 可惜这里使用的 PhotoDraweeView 不是我写的。 原作者：https://github.com/ongakuer/PhotoDraweeView
  */
 public class BigImageActivity extends AppCompatActivity {
 
