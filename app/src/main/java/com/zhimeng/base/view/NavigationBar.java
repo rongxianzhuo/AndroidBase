@@ -28,12 +28,20 @@ public class NavigationBar extends LinearLayout {
 
         public View view;
         public ImageView imageView;
-        public @DrawableRes
-        int icon, activeIcon;
+        public @DrawableRes int icon;
 
-        public ItemHolder(Context context, LinearLayout container, @StringRes int text, @DrawableRes int icon, @DrawableRes int activeIcon) {
+        public ItemHolder(Context context, @StringRes int text, @DrawableRes int icon) {
             this.icon = icon;
-            this.activeIcon = activeIcon;
+            view = LayoutInflater.from(context).inflate(R.layout.zhimeng_item_bottom_navigation_bar, null, false);
+            view.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f));
+            imageView = (ImageView) view.findViewById(R.id.item_image_1564);
+            if (imageView != null) imageView.setImageResource(icon);
+            TextView textView = (TextView) view.findViewById(R.id.item_text_1564);
+            if (textView != null) textView.setText(text);
+        }
+
+        public ItemHolder(Context context, String text, @DrawableRes int icon) {
+            this.icon = icon;
             view = LayoutInflater.from(context).inflate(R.layout.zhimeng_item_bottom_navigation_bar, null, false);
             view.setLayoutParams(new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f));
             imageView = (ImageView) view.findViewById(R.id.item_image_1564);
@@ -69,7 +77,39 @@ public class NavigationBar extends LinearLayout {
         setOrientation(HORIZONTAL);
         holders = new ItemHolder[stringId.length];
         for (int i = 0; i < stringId.length; i++) {
-            holders[i] = new ItemHolder(context, container, stringId[i], iconId[i], activeIconId[i]);
+            holders[i] = new ItemHolder(context, stringId[i], iconId[i]);
+            holders[i].view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int j = 0; j < holders.length; j++) {
+                        if (view == holders[j].view) {
+                            holders[j].imageView.setImageResource(activeIconId[j]);
+                            listener.click(j);
+                        }
+                        else holders[j].imageView.setImageResource(iconId[j]);
+                    }
+                }
+            });
+        }
+        holders[0].imageView.setImageResource(activeIconId[0]);
+        for (ItemHolder h : holders) container.addView(h.view);
+    }
+
+    /**
+     * 初始化
+     * @param context context
+     * @param string 标题数组
+     * @param iconId 未激活图标数组
+     * @param activeIconId 激活图标数组
+     */
+    public void setup(Context context, final String[] string, @DrawableRes final int[] iconId, @DrawableRes final int[] activeIconId) {
+        View view = LayoutInflater.from(context).inflate(R.layout.zhimeng_view_navigation_var, this, true);
+        LinearLayout container = (LinearLayout) view.findViewById(R.id.navigation_container_8438);
+        setBackgroundColor(Color.argb(255, 255, 255, 255));
+        setOrientation(HORIZONTAL);
+        holders = new ItemHolder[string.length];
+        for (int i = 0; i < string.length; i++) {
+            holders[i] = new ItemHolder(context, string[i], iconId[i]);
             holders[i].view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
