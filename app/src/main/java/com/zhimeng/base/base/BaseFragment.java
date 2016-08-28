@@ -2,11 +2,17 @@ package com.zhimeng.base.base;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.StringRes;
+import android.util.Log;
+import android.util.Pair;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import rx.Subscriber;
 
 /**
  *
@@ -14,10 +20,71 @@ import java.util.ArrayList;
  */
 public class BaseFragment extends Fragment {
 
-    private ProgressDialog progressDialog;
-    private boolean isRunningForeground = false;
-    private ArrayList<Runnable> uiUpdateList = new ArrayList<>();
+    private static final String START_ACTIVITY_FOR_RESULT_KEY = "START_ACTIVITY_FOR_RESULT_KEY_154";
 
+    public interface OnResultListener {
+        void onResult(Object o);
+    }
+
+    private static ArrayList<Pair<String, Object>> intentData = new ArrayList<>();
+
+    private ArrayList<Pair<String, OnResultListener>> listeners = new ArrayList<>();
+    private ProgressDialog progressDialog;
+    private ArrayList<Runnable> uiUpdateList = new ArrayList<>();
+    private boolean isRunningForeground = false;
+    private ArrayList<Subscriber<Object>> subscribers = new ArrayList<>();
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        listeners.clear();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String requestCodeString = "" + requestCode;
+        for (int i = 0; i < listeners.size(); i++) if (listeners.get(i).first.equals(requestCodeString)) {
+            Object object = null;
+            for (int j = 0; j < intentData.size(); j++) if (intentData.get(j).first.equals(requestCodeString)) {
+                object = intentData.get(j).second;
+                intentData.remove(j);
+                break;
+            }
+            listeners.get(i).second.onResult(object);
+            listeners.remove(i);
+            break;
+        }
+    }
+
+    /**
+     * 更方便的startActivityForResult（不用监听onActivityResult方法）
+     * @param intent intent
+     * @param listener listener，获得对方activity返回的Object
+     */
+    public void startActivityForResult(Intent intent, OnResultListener listener) {
+        String stringCode = null;
+        for (Pair<String, OnResultListener> pair : listeners) if (pair.second == listener) {
+            stringCode = pair.first;
+            break;
+        }
+        if (stringCode == null) {
+            int code =  (int)(System.currentTimeMillis() % Integer.MAX_VALUE);
+            listeners.add(new Pair<>("" + code, listener));
+            intent.putExtra(START_ACTIVITY_FOR_RESULT_KEY, "" + code);
+            startActivityForResult(intent, code);
+        }
+        else {
+            try {
+                int code = Integer.parseInt(stringCode);
+                intent.putExtra(START_ACTIVITY_FOR_RESULT_KEY, stringCode);
+                startActivityForResult(intent, code);
+            }
+            catch (Exception e) {
+                Log.e("zhimeng", e.getMessage());
+            }
+        }
+    }
 
     /**
      * 显示等待会话框
@@ -26,7 +93,7 @@ public class BaseFragment extends Fragment {
      * @param during 最长显示时间（毫秒）
      */
     public void showProgressDialog(@StringRes int title, @StringRes int message, int during) {
-        if (progressDialog != null || getActivity().isFinishing()) return;
+        if (progressDialog != null || !isRunningForeground) return;
         progressDialog = ProgressDialog.show(getActivity()
                 , getString(title)
                 , getString(message)
@@ -42,28 +109,34 @@ public class BaseFragment extends Fragment {
     }
 
     /**
+     * 显示等待会话框
+     * @param title 标题
+     * @param message 正文消息
+     * @param during 最长显示时间（毫秒）
+     */
+    public void showProgressDialog(String title, String message, int during) {
+        if (progressDialog != null || !isRunningForeground) return;
+        progressDialog = ProgressDialog.show(getActivity()
+                , title
+                , message
+                , false, false);
+        final ProgressDialog mProgressDialog = progressDialog;
+        new Handler().postDelayed(new Runnable(){
+
+            public void run() {
+                if (mProgressDialog == progressDialog) hideProgressDialog();//设置ProgressDialog显示的最长时间
+            }
+
+        }, during);
+    }
+
+    /**
      * 隐藏使用showProgressDialog方法显示的对话框（如果有的话）
      */
     public void hideProgressDialog() {
-        if (progressDialog == null) return;
+        if (!isRunningForeground || progressDialog == null) return;
         progressDialog.dismiss();
         progressDialog = null;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        try {
-            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
-            childFragmentManager.setAccessible(true);
-            childFragmentManager.set(this, null);
-
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Override
@@ -87,5 +160,22 @@ public class BaseFragment extends Fragment {
     public void postUiRunnable(Runnable runnable) {
         if (isRunningForeground) runnable.run();
         else uiUpdateList.add(runnable);
+    }
+
+    /**
+     * 增加订阅者
+     * 调用此方法来为activity订阅可以帮助你在activity销毁时同时取消订阅
+     * @param subscriber 订阅者
+     */
+    public void subscribeRxBus(Subscriber<Object> subscriber) {
+        for (Subscriber m : subscribers) if (m == subscriber) return;
+        RxBus.toObservable().subscribe(subscriber);
+        subscribers.add(subscriber);
+    }
+
+    @Override
+    public void onDestroy() {
+        for (Subscriber m : subscribers) if (m != null && !m.isUnsubscribed()) m.unsubscribe();
+        super.onDestroy();
     }
 }

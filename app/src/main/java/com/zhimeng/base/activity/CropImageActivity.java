@@ -19,6 +19,7 @@ import android.view.View;
 
 import com.zhimeng.base.R;
 import com.zhimeng.base.base.BaseActivity;
+import com.zhimeng.base.base.BaseFragment;
 import com.zhimeng.base.util.BitmapUtil;
 import com.zhimeng.base.view.CropImageView;
 
@@ -35,6 +36,8 @@ import rx.schedulers.Schedulers;
  * 功能：
  * 启动后会根据情况进行拍照或选择本地文件，然后进行图片裁剪，最后将裁减图片保存到指定路径
  * activity会自动检测并申请文件读写权限
+ * 可以在源activity的onActivityResult方法中监听是否成功，成功则resultCode == RESULT_OK
+ * 如果源activity是继承我们的BaseActivity或BaseFragment的话，你也可以调用我们自定义的startActivityforResult方法
  */
 public class CropImageActivity extends BaseActivity {
 
@@ -97,7 +100,10 @@ public class CropImageActivity extends BaseActivity {
             }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Boolean>() {
                 @Override
                 public void call(Boolean o) {
-                    if (o) setResult(RESULT_OK);
+                    if (o) {
+                        setResult(RESULT_OK);
+                        setResult("done");//for base activity or fragment
+                    }
                     image.recycle();
                     finish();
                 }
@@ -162,6 +168,28 @@ public class CropImageActivity extends BaseActivity {
         Intent intent = new Intent(activity, CropImageActivity.class);
         intent.putExtra(IMAGE_PATH_KEY, imagePath);
         activity.startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * 使用这个方法启动activity，需要源activity继承BaseActivity，若保存成功，listener回调任意值，包括null
+     * @param activity 跳转起始activity
+     * @param imagePath 截图完成后图片保存的路径
+     */
+    public static void startActivity(BaseActivity activity, String imagePath, BaseActivity.OnResultListener listener) {
+        Intent intent = new Intent(activity, CropImageActivity.class);
+        intent.putExtra(IMAGE_PATH_KEY, imagePath);
+        activity.startActivityForResult(intent, listener);
+    }
+
+    /**
+     * 使用这个方法启动activity，需要源fragment继承BaseFragment，若保存成功，listener回调任意值，包括null
+     * @param fragment 跳转起始fragment
+     * @param imagePath 截图完成后图片保存的路径
+     */
+    public static void startActivity(BaseFragment fragment, String imagePath, BaseFragment.OnResultListener listener) {
+        Intent intent = new Intent(fragment.getActivity(), CropImageActivity.class);
+        intent.putExtra(IMAGE_PATH_KEY, imagePath);
+        fragment.startActivityForResult(intent, listener);
     }
 
     /**
