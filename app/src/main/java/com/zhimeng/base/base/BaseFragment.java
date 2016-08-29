@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.StringRes;
-import android.util.Log;
-import android.util.Pair;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import rx.Subscriber;
@@ -20,15 +17,6 @@ import rx.Subscriber;
  */
 public class BaseFragment extends Fragment {
 
-    private static final String START_ACTIVITY_FOR_RESULT_KEY = "START_ACTIVITY_FOR_RESULT_KEY_154";
-
-    public interface OnResultListener {
-        void onResult(Object o);
-    }
-
-    private static ArrayList<Pair<String, Object>> intentData = new ArrayList<>();
-
-    private ArrayList<Pair<String, OnResultListener>> listeners = new ArrayList<>();
     private ProgressDialog progressDialog;
     private ArrayList<Runnable> uiUpdateList = new ArrayList<>();
     private boolean isRunningForeground = false;
@@ -37,53 +25,37 @@ public class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        listeners.clear();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String requestCodeString = "" + requestCode;
-        for (int i = 0; i < listeners.size(); i++) if (listeners.get(i).first.equals(requestCodeString)) {
-            Object object = null;
-            for (int j = 0; j < intentData.size(); j++) if (intentData.get(j).first.equals(requestCodeString)) {
-                object = intentData.get(j).second;
-                intentData.remove(j);
-                break;
-            }
-            listeners.get(i).second.onResult(object);
-            listeners.remove(i);
-            break;
+        BaseContext.OnResultListener listener = BaseContext.resultListener.get(requestCodeString);
+        if (listener == null) {
+            BaseContext.requestData.remove(requestCodeString);
+            return;
         }
+        listener.onResult(BaseContext.resultData.get(requestCodeString));
+        BaseContext.requestData.remove(requestCodeString);
+        BaseContext.resultData.remove(requestCodeString);
+        listener.onResult(BaseContext.resultData.get(requestCodeString));
+        BaseContext.resultListener.remove(requestCodeString);
     }
 
     /**
-     * 更方便的startActivityForResult（不用监听onActivityResult方法）
-     * @param intent intent
-     * @param listener listener，获得对方activity返回的Object
+     * 更方便的startActivity
+     * @param cls 要跳转的activity
+     * @param send 要传递的对象
+     * @param listener listener，获得对方activity返回的Object (可以为空)
      */
-    public void startActivityForResult(Intent intent, OnResultListener listener) {
-        String stringCode = null;
-        for (Pair<String, OnResultListener> pair : listeners) if (pair.second == listener) {
-            stringCode = pair.first;
-            break;
-        }
-        if (stringCode == null) {
-            int code =  (int)(System.currentTimeMillis() % Integer.MAX_VALUE);
-            listeners.add(new Pair<>("" + code, listener));
-            intent.putExtra(START_ACTIVITY_FOR_RESULT_KEY, "" + code);
-            startActivityForResult(intent, code);
-        }
-        else {
-            try {
-                int code = Integer.parseInt(stringCode);
-                intent.putExtra(START_ACTIVITY_FOR_RESULT_KEY, stringCode);
-                startActivityForResult(intent, code);
-            }
-            catch (Exception e) {
-                Log.e("zhimeng", e.getMessage());
-            }
-        }
+    public void startActivity(Class cls, Object send, BaseContext.OnResultListener listener) {
+        Intent intent = new Intent(getActivity(), cls);
+        int code = (int)(System.currentTimeMillis() % 65536);
+        if (send != null) BaseContext.requestData.put("" + code, send);
+        if (listener != null) BaseContext.resultListener.put("" + code, listener);
+        intent.putExtra(BaseContext.START_ACTIVITY_KEY, "" + code);
+        startActivityForResult(intent, code);
     }
 
     /**
@@ -97,28 +69,6 @@ public class BaseFragment extends Fragment {
         progressDialog = ProgressDialog.show(getActivity()
                 , getString(title)
                 , getString(message)
-                , false, false);
-        final ProgressDialog mProgressDialog = progressDialog;
-        new Handler().postDelayed(new Runnable(){
-
-            public void run() {
-                if (mProgressDialog == progressDialog) hideProgressDialog();//设置ProgressDialog显示的最长时间
-            }
-
-        }, during);
-    }
-
-    /**
-     * 显示等待会话框
-     * @param title 标题
-     * @param message 正文消息
-     * @param during 最长显示时间（毫秒）
-     */
-    public void showProgressDialog(String title, String message, int during) {
-        if (progressDialog != null || !isRunningForeground) return;
-        progressDialog = ProgressDialog.show(getActivity()
-                , title
-                , message
                 , false, false);
         final ProgressDialog mProgressDialog = progressDialog;
         new Handler().postDelayed(new Runnable(){

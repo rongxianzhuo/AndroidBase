@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.util.Pair;
 
 import java.util.ArrayList;
 
@@ -21,15 +19,6 @@ import rx.Subscriber;
  */
 public class BaseActivity extends AppCompatActivity {
 
-    private static final String START_ACTIVITY_FOR_RESULT_KEY = "START_ACTIVITY_FOR_RESULT_KEY_154";
-
-    public interface OnResultListener {
-        void onResult(Object o);
-    }
-
-    private static ArrayList<Pair<String, Object>> intentData = new ArrayList<>();
-
-    private ArrayList<Pair<String, OnResultListener>> listeners = new ArrayList<>();
     private ProgressDialog progressDialog;
     private ArrayList<Runnable> uiUpdateList = new ArrayList<>();
     private boolean isRunningForeground = false;
@@ -38,53 +27,37 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        listeners.clear();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String requestCodeString = "" + requestCode;
-        for (int i = 0; i < listeners.size(); i++) if (listeners.get(i).first.equals(requestCodeString)) {
-            Object object = null;
-            for (int j = 0; j < intentData.size(); j++) if (intentData.get(j).first.equals(requestCodeString)) {
-                object = intentData.get(j).second;
-                intentData.remove(j);
-                break;
-            }
-            listeners.get(i).second.onResult(object);
-            listeners.remove(i);
-            break;
+        BaseContext.OnResultListener listener = BaseContext.resultListener.get(requestCodeString);
+        if (listener == null) {
+            BaseContext.requestData.remove(requestCodeString);
+            return;
         }
+        listener.onResult(BaseContext.resultData.get(requestCodeString));
+        BaseContext.requestData.remove(requestCodeString);
+        BaseContext.resultData.remove(requestCodeString);
+        listener.onResult(BaseContext.resultData.get(requestCodeString));
+        BaseContext.resultListener.remove(requestCodeString);
     }
 
     /**
-     * 更方便的startActivityForResult（不用监听onActivityResult方法）
-     * @param intent intent
-     * @param listener listener，获得对方activity返回的Object
+     * 更方便的startActivity
+     * @param cls 要跳转的activity
+     * @param send 要传递的对象
+     * @param listener listener，获得对方activity返回的Object (可以为空)
      */
-    public void startActivityForResult(Intent intent, OnResultListener listener) {
-        String stringCode = null;
-        for (Pair<String, OnResultListener> pair : listeners) if (pair.second == listener) {
-            stringCode = pair.first;
-            break;
-        }
-        if (stringCode == null) {
-            int code =  (int)(System.currentTimeMillis() % Integer.MAX_VALUE);
-            listeners.add(new Pair<>("" + code, listener));
-            intent.putExtra(START_ACTIVITY_FOR_RESULT_KEY, "" + code);
-            startActivityForResult(intent, code);
-        }
-        else {
-            try {
-                int code = Integer.parseInt(stringCode);
-                intent.putExtra(START_ACTIVITY_FOR_RESULT_KEY, stringCode);
-                startActivityForResult(intent, code);
-            }
-            catch (Exception e) {
-                Log.e("zhimeng", e.getMessage());
-            }
-        }
+    public void startActivity(Class cls, Object send, BaseContext.OnResultListener listener) {
+        Intent intent = new Intent(this, cls);
+        int code = (int)(System.currentTimeMillis() % 65536);
+        if (send != null) BaseContext.requestData.put("" + code, send);
+        if (listener != null) BaseContext.resultListener.put("" + code, listener);
+        intent.putExtra(BaseContext.START_ACTIVITY_KEY, "" + code);
+        startActivityForResult(intent, code);
     }
 
     /**
@@ -94,10 +67,21 @@ public class BaseActivity extends AppCompatActivity {
     public void setResult(Object o) {
         Intent intent = getIntent();
         if (intent == null) return;
-        String requestCode = intent.getStringExtra(START_ACTIVITY_FOR_RESULT_KEY);
-        for (Pair<String, OnResultListener> pair : listeners) if (pair.first.equals(requestCode)) {
-            intentData.add(new Pair<String, Object>(requestCode, o));
-            return;
+        String requestCode = intent.getStringExtra(BaseContext.START_ACTIVITY_KEY);
+        BaseContext.resultData.put(requestCode, o);
+    }
+
+    /**
+     * 获取源activity传递的对象
+     * @return 对象
+     */
+    public Object getIntentData() {
+        try {
+            String s = getIntent().getStringExtra(BaseContext.START_ACTIVITY_KEY);
+            return BaseContext.requestData.get(s);
+        }
+        catch (Exception e) {
+            return null;
         }
     }
 
