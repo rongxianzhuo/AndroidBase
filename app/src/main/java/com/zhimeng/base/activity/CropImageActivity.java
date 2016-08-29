@@ -19,6 +19,7 @@ import android.view.View;
 
 import com.zhimeng.base.R;
 import com.zhimeng.base.base.BaseActivity;
+import com.zhimeng.base.base.BaseContext;
 import com.zhimeng.base.base.BaseFragment;
 import com.zhimeng.base.util.BitmapUtil;
 import com.zhimeng.base.view.CropImageView;
@@ -175,10 +176,10 @@ public class CropImageActivity extends BaseActivity {
      * @param activity 跳转起始activity
      * @param imagePath 截图完成后图片保存的路径
      */
-    public static void startActivity(BaseActivity activity, String imagePath, BaseActivity.OnResultListener listener) {
+    public static void startActivity(BaseActivity activity, String imagePath, BaseContext.OnResultListener listener) {
         Intent intent = new Intent(activity, CropImageActivity.class);
         intent.putExtra(IMAGE_PATH_KEY, imagePath);
-        activity.startActivityForResult(intent, listener);
+        activity.startActivity(CropImageActivity.class, null, listener);
     }
 
     /**
@@ -186,10 +187,10 @@ public class CropImageActivity extends BaseActivity {
      * @param fragment 跳转起始fragment
      * @param imagePath 截图完成后图片保存的路径
      */
-    public static void startActivity(BaseFragment fragment, String imagePath, BaseFragment.OnResultListener listener) {
+    public static void startActivity(BaseFragment fragment, String imagePath, BaseContext.OnResultListener listener) {
         Intent intent = new Intent(fragment.getActivity(), CropImageActivity.class);
         intent.putExtra(IMAGE_PATH_KEY, imagePath);
-        fragment.startActivityForResult(intent, listener);
+        fragment.startActivity(CropImageActivity.class, null, listener);
     }
 
     /**
