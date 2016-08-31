@@ -32,14 +32,9 @@ public class BaseFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         String requestCodeString = "" + requestCode;
         BaseContext.OnResultListener listener = BaseContext.resultListener.get(requestCodeString);
-        if (listener == null) {
-            BaseContext.requestData.remove(requestCodeString);
-            return;
-        }
-        listener.onResult(BaseContext.resultData.get(requestCodeString));
+        if (listener != null) listener.onResult(BaseContext.resultData.get(requestCodeString));
         BaseContext.requestData.remove(requestCodeString);
         BaseContext.resultData.remove(requestCodeString);
-        listener.onResult(BaseContext.resultData.get(requestCodeString));
         BaseContext.resultListener.remove(requestCodeString);
     }
 

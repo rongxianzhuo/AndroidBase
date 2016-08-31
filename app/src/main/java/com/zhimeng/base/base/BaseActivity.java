@@ -34,14 +34,9 @@ public class BaseActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         String requestCodeString = "" + requestCode;
         BaseContext.OnResultListener listener = BaseContext.resultListener.get(requestCodeString);
-        if (listener == null) {
-            BaseContext.requestData.remove(requestCodeString);
-            return;
-        }
-        listener.onResult(BaseContext.resultData.get(requestCodeString));
+        if (listener != null) listener.onResult(BaseContext.resultData.get(requestCodeString));
         BaseContext.requestData.remove(requestCodeString);
         BaseContext.resultData.remove(requestCodeString);
-        listener.onResult(BaseContext.resultData.get(requestCodeString));
         BaseContext.resultListener.remove(requestCodeString);
     }
 
@@ -61,7 +56,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 如果上一个activity是通过startActivityForResult(Intent intent, OnResultListener listener)方法启动当前activity，这通过该方法设置返回结果
+     * 如果上一个activity是通过startActivityForResult(Class cls, Object send, BaseContext.OnResultListener listener)方法启动当前activity，这通过该方法设置返回结果
      * @param o 结果
      */
     public void setResult(Object o) {
