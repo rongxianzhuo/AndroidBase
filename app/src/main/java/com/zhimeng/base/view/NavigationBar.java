@@ -68,6 +68,68 @@ public class NavigationBar extends LinearLayout {
      * @param context context
      * @param stringId 标题数组
      * @param iconId 未激活图标数组
+     */
+    public void setup(final Context context, @StringRes final int[] stringId, @DrawableRes final int[] iconId) {
+        View view = LayoutInflater.from(context).inflate(R.layout.zhimeng_view_navigation_var, this, true);
+        LinearLayout container = (LinearLayout) view.findViewById(R.id.navigation_container_8438);
+        setBackgroundColor(Color.argb(255, 255, 255, 255));
+        setOrientation(HORIZONTAL);
+        holders = new ItemHolder[stringId.length];
+        for (int i = 0; i < stringId.length; i++) {
+            holders[i] = new ItemHolder(context, stringId[i], iconId[i]);
+            holders[i].view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int j = 0; j < holders.length; j++) {
+                        if (view == holders[j].view) {
+                            holders[j].imageView.setColorFilter(context.getResources().getColor(R.color.colorPrimary));
+                            listener.click(j);
+                        }
+                        else holders[j].imageView.clearColorFilter();
+                    }
+                }
+            });
+        }
+        holders[0].imageView.setColorFilter(context.getResources().getColor(R.color.colorPrimary));
+        for (ItemHolder h : holders) container.addView(h.view);
+    }
+
+    /**
+     * 初始化
+     * @param context context
+     * @param stringId 标题数组
+     * @param iconId 未激活图标数组
+     */
+    public void setup(final Context context, final String[] stringId, @DrawableRes final int[] iconId) {
+        View view = LayoutInflater.from(context).inflate(R.layout.zhimeng_view_navigation_var, this, true);
+        LinearLayout container = (LinearLayout) view.findViewById(R.id.navigation_container_8438);
+        setBackgroundColor(Color.argb(255, 255, 255, 255));
+        setOrientation(HORIZONTAL);
+        holders = new ItemHolder[stringId.length];
+        for (int i = 0; i < stringId.length; i++) {
+            holders[i] = new ItemHolder(context, stringId[i], iconId[i]);
+            holders[i].view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (int j = 0; j < holders.length; j++) {
+                        if (view == holders[j].view) {
+                            holders[j].imageView.setColorFilter(context.getResources().getColor(R.color.colorPrimary));
+                            listener.click(j);
+                        }
+                        else holders[j].imageView.clearColorFilter();
+                    }
+                }
+            });
+        }
+        holders[0].imageView.setColorFilter(context.getResources().getColor(R.color.colorPrimary));
+        for (ItemHolder h : holders) container.addView(h.view);
+    }
+
+    /**
+     * 初始化
+     * @param context context
+     * @param stringId 标题数组
+     * @param iconId 未激活图标数组
      * @param activeIconId 激活图标数组
      */
     public void setup(Context context, @StringRes final int[] stringId, @DrawableRes final int[] iconId, @DrawableRes final int[] activeIconId) {
