@@ -8,7 +8,7 @@
     <string name="zhimeng_activity_crop_image_menu_ok">确定</string>
     <string name="zhimeng_activity_crop_waiting_cropping">正在裁剪图片</string>
     <string name="zhimeng_activity_crop_waiting_reading">正在读取图片</string>
-    <string name="zhimeng_activity_crop_dialog_msg">从哪获取找片？</string>
+    <string name="zhimeng_activity_crop_dialog_msg">从哪获取照片？</string>
     <string name="zhimeng_activity_crop_dialog_bt1">从文件</string>
     <string name="zhimeng_activity_crop_dialog_bt2">从相机</string>
 </resources>
