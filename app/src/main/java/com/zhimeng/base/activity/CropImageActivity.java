@@ -58,7 +58,9 @@ public class CropImageActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.zhimeng_activity_crop_image);
-        imageTemp = getIntent().getStringExtra(IMAGE_PATH_KEY);
+        Object o = getIntentData();
+        if (o == null) imageTemp = getIntent().getStringExtra(IMAGE_PATH_KEY);
+        else imageTemp = o.toString();
         if (imageTemp == null || imageTemp.isEmpty()) {
             finish();
             return;
@@ -177,9 +179,7 @@ public class CropImageActivity extends BaseActivity {
      * @param imagePath 截图完成后图片保存的路径
      */
     public static void startActivity(BaseActivity activity, String imagePath, BaseContext.OnResultListener listener) {
-        Intent intent = new Intent(activity, CropImageActivity.class);
-        intent.putExtra(IMAGE_PATH_KEY, imagePath);
-        activity.startActivity(CropImageActivity.class, null, listener);
+        activity.startActivity(CropImageActivity.class, imagePath, listener);
     }
 
     /**
@@ -188,9 +188,7 @@ public class CropImageActivity extends BaseActivity {
      * @param imagePath 截图完成后图片保存的路径
      */
     public static void startActivity(BaseFragment fragment, String imagePath, BaseContext.OnResultListener listener) {
-        Intent intent = new Intent(fragment.getActivity(), CropImageActivity.class);
-        intent.putExtra(IMAGE_PATH_KEY, imagePath);
-        fragment.startActivity(CropImageActivity.class, null, listener);
+        fragment.startActivity(CropImageActivity.class, imagePath, listener);
     }
 
     /**
