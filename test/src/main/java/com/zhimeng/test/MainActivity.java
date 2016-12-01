@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         navigationBar.setup(this
                 , new int[]{R.string.app_name, R.string.app_name}
                 , new int[]{R.drawable.ic_home_black_24dp, R.drawable.ic_home_black_24dp}
-                , new int[]{R.drawable.ic_home_black_24dp, R.drawable.ic_home_black_24dp}
+                , R.color.common_text, R.color.colorAccent
                 , R.color.common_text, R.color.colorAccent);
         navigationFrameLayout.setupWithNavigation(this, R.id.navigation_frame_layout, navigationBar, fragments);
     }

@@ -111,7 +111,7 @@ public class NavigationBar extends LinearLayout {
             holder.imageView.setColorFilter(context.getResources().getColor(commonIconColor));
             holder.textView.setTextColor(context.getResources().getColor(commonTextColor));
         }
-        holders[0].imageView.setColorFilter(context.getResources().getColor(commonIconColor));
+        holders[0].imageView.setColorFilter(context.getResources().getColor(activeIconColor));
         holders[0].textView.setTextColor(context.getResources().getColor(activeTextColor));
         for (ItemHolder h : holders) container.addView(h.view);
     }
