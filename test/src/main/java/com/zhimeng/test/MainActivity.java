@@ -3,11 +3,15 @@ package com.zhimeng.test;
 import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
+import com.zhimeng.base.base.BaseActivity;
+import com.zhimeng.base.base.BaseContext;
 import com.zhimeng.base.view.NavigationBar;
 import com.zhimeng.base.view.NavigationFrameLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private Fragment[] fragments = new Fragment[2];
 
@@ -29,5 +33,14 @@ public class MainActivity extends AppCompatActivity {
                 , R.color.common_text, R.color.colorAccent
                 , R.color.common_text, R.color.colorAccent);
         navigationFrameLayout.setupWithNavigation(this, R.id.navigation_frame_layout, navigationBar, fragments);
+    }
+
+    public void buttonClick(View view) {
+        ToActivity.startActivity(this, ToActivity.class, "rxz", new BaseContext.OnResultListener() {
+            @Override
+            public void onResult(Object o) {
+                Toast.makeText(MainActivity.this, "activity get " + o, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

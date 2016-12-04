@@ -2,6 +2,7 @@ package com.zhimeng.base.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -179,16 +180,16 @@ public class CropImageActivity extends BaseActivity {
      * @param imagePath 截图完成后图片保存的路径
      */
     public static void startActivity(BaseActivity activity, String imagePath, BaseContext.OnResultListener listener) {
-        activity.startActivity(CropImageActivity.class, imagePath, listener);
+        startActivity(activity, CropImageActivity.class, imagePath, listener);
     }
 
     /**
-     * 使用这个方法启动activity，需要源fragment继承BaseFragment，若保存成功，listener回调任意值，包括null
+     * 使用这个方法启动activity，需要源activity继承BaseActivity，若保存成功，listener回调任意值，包括null
      * @param fragment 跳转起始fragment
      * @param imagePath 截图完成后图片保存的路径
      */
     public static void startActivity(BaseFragment fragment, String imagePath, BaseContext.OnResultListener listener) {
-        fragment.startActivity(CropImageActivity.class, imagePath, listener);
+        startActivity(fragment, CropImageActivity.class, imagePath, listener);
     }
 
     /**

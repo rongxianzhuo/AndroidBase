@@ -1,6 +1,8 @@
 package com.zhimeng.base.base;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,18 +43,46 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 更方便的startActivity
+     * 启动Activity
+     * @param cls 要跳转的activity
+     * @param send 要传递的对象
+     */
+    public static void startActivity(Activity activity, Class cls, Object send) {
+        Intent intent = new Intent(activity, cls);
+        int code = (int)(System.currentTimeMillis() % 65536);
+        if (send != null) BaseContext.requestData.put("" + code, send);
+        intent.putExtra(BaseContext.START_ACTIVITY_KEY, "" + code);
+        activity.startActivityForResult(intent, code);
+    }
+
+    /**
+     * 启动Activity
      * @param cls 要跳转的activity
      * @param send 要传递的对象
      * @param listener listener，获得对方activity返回的Object (可以为空)
      */
-    public void startActivity(Class cls, Object send, BaseContext.OnResultListener listener) {
-        Intent intent = new Intent(this, cls);
+    public static void startActivity(BaseActivity activity, Class cls, Object send, BaseContext.OnResultListener listener) {
+        Intent intent = new Intent(activity, cls);
         int code = (int)(System.currentTimeMillis() % 65536);
         if (send != null) BaseContext.requestData.put("" + code, send);
         if (listener != null) BaseContext.resultListener.put("" + code, listener);
         intent.putExtra(BaseContext.START_ACTIVITY_KEY, "" + code);
-        startActivityForResult(intent, code);
+        activity.startActivityForResult(intent, code);
+    }
+
+    /**
+     * 启动Activity
+     * @param cls 要跳转的activity
+     * @param send 要传递的对象
+     * @param listener listener，获得对方activity返回的Object (可以为空)
+     */
+    public static void startActivity(BaseFragment fragment, Class cls, Object send, BaseContext.OnResultListener listener) {
+        Intent intent = new Intent(fragment.getActivity(), cls);
+        int code = (int)(System.currentTimeMillis() % 65536);
+        if (send != null) BaseContext.requestData.put("" + code, send);
+        if (listener != null) BaseContext.resultListener.put("" + code, listener);
+        intent.putExtra(BaseContext.START_ACTIVITY_KEY, "" + code);
+        fragment.startActivityForResult(intent, code);
     }
 
     /**

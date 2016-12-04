@@ -1,5 +1,6 @@
 package com.zhimeng.base.base;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -36,21 +37,6 @@ public class BaseFragment extends Fragment {
         BaseContext.requestData.remove(requestCodeString);
         BaseContext.resultData.remove(requestCodeString);
         BaseContext.resultListener.remove(requestCodeString);
-    }
-
-    /**
-     * 更方便的startActivity
-     * @param cls 要跳转的activity
-     * @param send 要传递的对象
-     * @param listener listener，获得对方activity返回的Object (可以为空)
-     */
-    public void startActivity(Class cls, Object send, BaseContext.OnResultListener listener) {
-        Intent intent = new Intent(getActivity(), cls);
-        int code = (int)(System.currentTimeMillis() % 65536);
-        if (send != null) BaseContext.requestData.put("" + code, send);
-        if (listener != null) BaseContext.resultListener.put("" + code, listener);
-        intent.putExtra(BaseContext.START_ACTIVITY_KEY, "" + code);
-        startActivityForResult(intent, code);
     }
 
     /**

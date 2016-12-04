@@ -15,4 +15,9 @@
         android:layout_height="56dp"
         android:id="@+id/navigation_bar"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:onClick="buttonClick"/>
+
 </LinearLayout>
