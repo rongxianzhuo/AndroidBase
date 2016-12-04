@@ -165,16 +165,11 @@ public class BaseListView extends RelativeLayout {
      * BaseListView 会调用loadMore接口，不要在额外的地方加载数据
      */
     public void notifyToRefresh() {
-        if (listener == null) return;
-        swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                if (loadingState % 2 == 0) loadingState++;
-                else loadingState += 2;
-                swipeRefreshLayout.setRefreshing(true);
-                listener.refresh();
-            }
-        });
+        if (listener == null || swipeRefreshLayout.isRefreshing()) return;
+        if (loadingState % 2 == 0) loadingState++;
+        else loadingState += 2;
+        swipeRefreshLayout.setRefreshing(true);
+        listener.refresh();
     }
 
     public void canRefresh(boolean b) {
