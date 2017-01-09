@@ -1,6 +1,7 @@
 package com.zhimeng.test;
 
-import android.app.Fragment;
+
+import android.support.v4.app.Fragment;
 
 /**
  * author:rongxianzhuo create at 2016/8/16

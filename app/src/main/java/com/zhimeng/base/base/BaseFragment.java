@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.StringRes;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -108,5 +109,13 @@ public class BaseFragment extends Fragment {
     public void onDestroy() {
         for (Subscriber m : subscribers) if (m != null && !m.isUnsubscribed()) m.unsubscribe();
         super.onDestroy();
+    }
+
+    public void toast(@StringRes int stringId) {
+        Toast.makeText(getActivity(), stringId, Toast.LENGTH_SHORT).show();
+    }
+
+    public void toast(String s) {
+        Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
     }
 }

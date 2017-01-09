@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -185,5 +186,13 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         for (Subscriber m : subscribers) if (m != null && !m.isUnsubscribed()) m.unsubscribe();
         super.onDestroy();
+    }
+
+    public void toast(@StringRes int stringId) {
+        Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
+    }
+
+    public void toast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 }

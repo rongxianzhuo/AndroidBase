@@ -4,20 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.zhimeng.base.view.NavigationFrameLayout
+    <com.zhimeng.base.view.TabPagerView
+        android:id="@+id/tabPagerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/navigation_frame_layout"/>
-
-    <com.zhimeng.base.view.NavigationBar
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:id="@+id/navigation_bar"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:onClick="buttonClick"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
