@@ -11,4 +11,26 @@
     <string name="zhimeng_activity_crop_dialog_msg">Where are you going to get a photo?</string>
     <string name="zhimeng_activity_crop_dialog_bt1">File</string>
     <string name="zhimeng_activity_crop_dialog_bt2">Camera</string>
+
+    <!-- strings for AuthActivity -->
+    <string name="zhimeng_view_login_login_title">Login</string>
+    <string name="zhimeng_view_login_register_title">Register</string>
+    <string name="zhimeng_view_login_username_hint">Username</string>
+    <string name="zhimeng_view_login_password_hint">Password</string>
+    <string name="zhimeng_view_login_login_button">SignIn</string>
+    <string name="zhimeng_view_login_to_register">Has no account?</string>
+    <string name="zhimeng_view_login_username_cannot_blank">Username cannot be blank</string>
+    <string name="zhimeng_view_login_password_cannot_blank">Password cannot be bland</string>
+    <string name="zhimeng_view_login_login_success">Sign in success</string>
+    <string name="zhimeng_view_login_incorrect_info">Incorrect username or password</string>
+    <string name="zhimeng_view_login_register_button">SignUp</string>
+    <string name="zhimeng_view_login_email_hint">Email</string>
+    <string name="zhimeng_view_login_password_confirm_hint">Password confirm</string>
+    <string name="zhimeng_view_login_to_login">Has a Account?</string>
+    <string name="zhimeng_view_login_email_blank">Email cannot be blank</string>
+    <string name="zhimeng_view_login_password_too_short">Password is too short</string>
+    <string name="zhimeng_view_login_register_success">Sign up success</string>
+    <string name="zhimeng_view_login_username_exists">Username exists</string>
+    <string name="zhimeng_view_login_password_not_match">Password confirm not match</string>
+    <string name="zhimeng_view_login_email_exists">Email exists</string>
 </resources>

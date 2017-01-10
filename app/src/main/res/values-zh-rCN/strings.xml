@@ -11,4 +11,27 @@
     <string name="zhimeng_activity_crop_dialog_msg">从哪获取照片？</string>
     <string name="zhimeng_activity_crop_dialog_bt1">从文件</string>
     <string name="zhimeng_activity_crop_dialog_bt2">从相机</string>
+
+    <!-- strings for AuthActivity -->
+    <string name="zhimeng_view_login_login_title">登陆</string>
+    <string name="zhimeng_view_login_register_title">注册</string>
+    <string name="zhimeng_view_login_username_hint">用户名（设置后不可更改）</string>
+    <string name="zhimeng_view_login_password_hint">密码（长度不小与6）</string>
+    <string name="zhimeng_view_login_login_button">登录</string>
+    <string name="zhimeng_view_login_to_register">没有账号？</string>
+    <string name="zhimeng_view_login_username_cannot_blank">用户名不能为空</string>
+    <string name="zhimeng_view_login_password_cannot_blank">密码不能为空</string>
+    <string name="zhimeng_view_login_login_success">登陆成功</string>
+    <string name="zhimeng_view_login_incorrect_info">用户名或密码错误</string>
+    <string name="zhimeng_view_login_register_button">注册</string>
+    <string name="zhimeng_view_login_email_hint">电子邮箱</string>
+    <string name="zhimeng_view_login_password_confirm_hint">确认密码</string>
+    <string name="zhimeng_view_login_to_login">已有账号？</string>
+    <string name="zhimeng_view_login_email_blank">邮箱不能为空</string>
+    <string name="zhimeng_view_login_username_blank">用户名不能为空</string>
+    <string name="zhimeng_view_login_password_too_short">密码长度不能小于6位</string>
+    <string name="zhimeng_view_login_register_success">注册成功</string>
+    <string name="zhimeng_view_login_username_exists">用户名已存在</string>
+    <string name="zhimeng_view_login_password_not_match">确认密码不匹配</string>
+    <string name="zhimeng_view_login_email_exists">邮箱已被注册</string>
 </resources>
