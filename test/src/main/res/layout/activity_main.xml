@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.zhimeng.base.view.TabPagerView
-        android:id="@+id/tabPagerView"
+    <com.facebook.drawee.view.SimpleDraweeView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:id="@+id/image_view"/>
 
 </LinearLayout>

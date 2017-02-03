@@ -2,6 +2,7 @@ package com.zhimeng.base.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,8 +15,11 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -24,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * author Xianzhuo Rong
@@ -32,6 +38,35 @@ import java.io.IOException;
  * github https://github.com/rongxianzhuo
  */
 public class BitmapUtil {
+
+    public static File getThumbnail(ContentResolver resolver, String path) {
+        //先得到缩略图的URL和对应的图片id
+        int id = getMediaStoreImageId(resolver, path);
+        if (id == -1) return null;
+        Cursor cursor = resolver.query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Thumbnails.IMAGE_ID, MediaStore.Images.Thumbnails.DATA}
+                , MediaStore.Images.Thumbnails.IMAGE_ID + "=" + id, null, null);
+        if (cursor == null || !cursor.moveToFirst()) return null;
+        String s = cursor.getString(1);
+        cursor.close();
+        return new File(s);
+    }
+
+    public static int getMediaStoreImageId(ContentResolver resolver, String path) {
+        Cursor cursor = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA}
+                , null, null, null);
+        if (cursor == null || !cursor.moveToFirst()) return -1;
+        do {
+            if (cursor.getString(1).equals(path)) {
+                int id = cursor.getInt(0);;
+                cursor.close();
+                return id;
+            }
+        } while (cursor.moveToNext());
+        cursor.close();
+        return -1;
+    }
 
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
         if (bitmap == null) return null;
@@ -110,9 +145,28 @@ public class BitmapUtil {
         return true;
     }
 
+    public static boolean saveBitmap(ContentResolver resolver, Uri uri, Bitmap image) {
+        if (image == null) return false;
+        OutputStream fOut;
+        try {
+            fOut = resolver.openOutputStream(uri);
+        } catch (Exception e) {
+            Log.e("saveBitmap", e.getMessage());
+            return false;
+        }
+        image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+        try {
+            assert fOut != null;
+            fOut.flush();
+            fOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     /**
      * 读取图片属性：旋转的角度
-     *
      * @param path 图片绝对路径
      * @return degree旋转的角度
      */
@@ -120,6 +174,34 @@ public class BitmapUtil {
         int degree = 0;
         try {
             ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return degree;
+    }
+
+    /**
+     * 读取图片属性：旋转的角度
+     * @param stream 图片stream
+     * @return degree旋转的角度
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static int readPictureDegree(InputStream stream) {
+        int degree = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(stream);
             int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
             switch (orientation) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
@@ -202,32 +284,28 @@ public class BitmapUtil {
     }
 
     /**
-     * Uri 转 绝对路径
-     * @param context context
-     * @param uri     uri
-     * @return 绝对路径
+     * 读取图片
+     * @param resolver ContentResolver
+     * @param uri 图片uri
+     * @param maxPix 最大像素（宽乘以高）
+     * @return 图片
      */
-    public static String getRealFilePath(final Context context, final Uri uri) {
-        if (null == uri) return null;
-        final String scheme = uri.getScheme();
-        String data = null;
-        if (scheme == null) data = uri.getPath();
-        else if (ContentResolver.SCHEME_FILE.equals(scheme)) data = uri.getPath();
-        else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            String path = uri.getPath();
-            String id = "";
-            for (int i = path.length() - 1; i > 0 && path.charAt(i) >= '0' && path.charAt(i) <= '9'; i--) id = "" + path.charAt(i) + id;
-            Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    , new String[]{MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns._ID}
-                    , MediaStore.Images.ImageColumns._ID + "=" + id, null, null);
-            if (null != cursor) {
-                if (cursor.moveToFirst()) {
-                    int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                    if (index > -1) data = cursor.getString(index);
-                }
-                cursor.close();
-            }
+    public static Bitmap readBitmapByMaxPix(ContentResolver resolver, Uri uri, long maxPix, int rotate) throws Exception {
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(resolver.openInputStream(uri), null, opts);
+        // 计算图片缩放比例
+        long max = opts.outWidth * opts.outHeight;
+        opts.inSampleSize = 1;
+        while (max > maxPix) {
+            opts.inSampleSize = opts.inSampleSize * 2;
+            max = max / 4;
         }
-        return data;
+        opts.inJustDecodeBounds = false;
+        Bitmap image = BitmapFactory.decodeStream(resolver.openInputStream(uri), null, opts);
+        if (rotate == 0) return image;
+        Bitmap toReturn = rotateImage(rotate, image);
+        image.recycle();
+        return toReturn;
     }
 }

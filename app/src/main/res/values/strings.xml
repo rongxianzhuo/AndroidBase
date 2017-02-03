@@ -33,4 +33,8 @@
     <string name="zhimeng_view_login_username_exists">Username exists</string>
     <string name="zhimeng_view_login_password_not_match">Password confirm not match</string>
     <string name="zhimeng_view_login_email_exists">Email exists</string>
+
+    <!-- string for FileSelectActivity -->
+    <string name="zhimeng_activity_file_select_toolbar_title">Select File</string>
+
 </resources>

@@ -44,28 +44,21 @@ import rx.schedulers.Schedulers;
 public class CropImageActivity extends BaseActivity {
 
 
-    private static final String IMAGE_PATH_KEY = "image_path";
     private static final long MAX_PIX = 1000 * 1000;//最大图片像素
 
-    public static final int FROM_FILE = 1314;
     public static final int FROM_CAREMA = 1315;
+
+    private static Uri imageUri;//用于传递给照相机
+    private static String realPath;//裁剪照片的实际地址，用于获取图片旋转角度
 
     private static Bitmap image;//当前图片
     private CropImageView cropImageView;
-    private String imageTemp = "";
     private AlertDialog.Builder dialogBuilder = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.zhimeng_activity_crop_image);
-        Object o = getIntentData();
-        if (o == null) imageTemp = getIntent().getStringExtra(IMAGE_PATH_KEY);
-        else imageTemp = o.toString();
-        if (imageTemp == null || imageTemp.isEmpty()) {
-            finish();
-            return;
-        }
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         if (getSupportActionBar() == null) {
             setSupportActionBar(toolbar);
@@ -98,16 +91,13 @@ public class CropImageActivity extends BaseActivity {
             Observable.create(new Observable.OnSubscribe<Boolean>() {
                 @Override
                 public void call(Subscriber<? super Boolean> subscriber) {
-                    subscriber.onNext(BitmapUtil.saveBitmap(imageTemp, cropImageView.getCroppedBitmap()));
+                    subscriber.onNext(BitmapUtil.saveBitmap(getContentResolver(), imageUri, cropImageView.getCroppedBitmap()));
                     subscriber.onCompleted();
                 }
             }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Boolean>() {
                 @Override
                 public void call(Boolean o) {
-                    if (o) {
-                        setResult(RESULT_OK);
-                        setResult("done");//for base activity or fragment
-                    }
+                    if (o) setResult("done");
                     image.recycle();
                     finish();
                 }
@@ -119,6 +109,7 @@ public class CropImageActivity extends BaseActivity {
     @Override
     public void onActivityResult(final int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != FROM_CAREMA) return;
         if (resultCode != Activity.RESULT_OK) {
             finish();
             return;
@@ -132,12 +123,12 @@ public class CropImageActivity extends BaseActivity {
                 Observable.create(new Observable.OnSubscribe<Bitmap>() {
                     @Override
                     public void call(Subscriber<? super Bitmap> subscriber) {
-                        String path = imageTemp;
-                        if (requestCode == FROM_FILE) {
-                            Uri uri = data.getData();
-                            path = BitmapUtil.getRealFilePath(CropImageActivity.this, uri);
+                        try {
+                            image = BitmapUtil.readBitmapByMaxPix(getContentResolver(), imageUri, MAX_PIX, BitmapUtil.readPictureDegree(realPath));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            finish();
                         }
-                        image = BitmapUtil.readBitmapByMaxPix(path, MAX_PIX, BitmapUtil.readPictureDegree(path));
                         subscriber.onNext(image);
                         subscriber.onCompleted();
                     }
@@ -156,40 +147,30 @@ public class CropImageActivity extends BaseActivity {
         Intent intent = new Intent();
         intent.setAction("android.media.action.IMAGE_CAPTURE");
         intent.addCategory("android.intent.category.DEFAULT");
-        File file = new File(imageTemp);
-        if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
-        Uri uri = Uri.fromFile(file);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, FROM_CAREMA);
-    }
-
-    /**
-     * 使用这个方法启动activity，请在原activity的onActivityResult方法中获取结果，若截图保存成功，则resultCode为 Activity.RESULT_OK
-     * @param activity 跳转起始activity
-     * @param imagePath 截图完成后图片保存的路径
-     */
-    public static void startActivity(Activity activity, String imagePath, int requestCode) {
-        Intent intent = new Intent(activity, CropImageActivity.class);
-        intent.putExtra(IMAGE_PATH_KEY, imagePath);
-        activity.startActivityForResult(intent, requestCode);
     }
 
     /**
      * 使用这个方法启动activity，需要源activity继承BaseActivity，若保存成功，listener回调任意值，包括null
      * @param activity 跳转起始activity
-     * @param imagePath 截图完成后图片保存的路径
+     * @param uri 截图完成后图片保存的路径
      */
-    public static void startActivity(BaseActivity activity, String imagePath, BaseContext.OnResultListener listener) {
-        startActivity(activity, CropImageActivity.class, imagePath, listener);
+    public static void startActivity(BaseActivity activity, Uri uri, String realPath, BaseContext.OnResultListener listener) {
+        CropImageActivity.imageUri = uri;
+        CropImageActivity.realPath = realPath;
+        startActivity(activity, CropImageActivity.class, null, listener);
     }
 
     /**
      * 使用这个方法启动activity，需要源activity继承BaseActivity，若保存成功，listener回调任意值，包括null
      * @param fragment 跳转起始fragment
-     * @param imagePath 截图完成后图片保存的路径
+     * @param uri 截图完成后图片保存的路径
      */
-    public static void startActivity(BaseFragment fragment, String imagePath, BaseContext.OnResultListener listener) {
-        startActivity(fragment, CropImageActivity.class, imagePath, listener);
+    public static void startActivity(BaseFragment fragment, Uri uri, String realPath, BaseContext.OnResultListener listener) {
+        CropImageActivity.imageUri = uri;
+        CropImageActivity.realPath = realPath;
+        startActivity(fragment, CropImageActivity.class, null, listener);
     }
 
     /**
@@ -216,10 +197,40 @@ public class CropImageActivity extends BaseActivity {
             dialogBuilder.setPositiveButton(R.string.zhimeng_activity_crop_dialog_bt1, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(intent, FROM_FILE);
+                    FileSelectActivity.startActivity(CropImageActivity.this, new String[]{".jpg", ".png"}, new BaseContext.OnResultListener() {
+                        @Override
+                        public void onResult(final Object o) {
+                            if (o == null) {
+                                finish();
+                                return;
+                            }
+                            postUiRunnable(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showProgressDialog(R.string.zhimeng_common_message, R.string.zhimeng_activity_crop_waiting_reading, 5000);
+                                    Observable.create(new Observable.OnSubscribe<Bitmap>() {
+                                        @Override
+                                        public void call(Subscriber<? super Bitmap> subscriber) {
+                                            try {
+                                                image = BitmapUtil.readBitmapByMaxPix(((File) o).getAbsolutePath(), MAX_PIX, BitmapUtil.readPictureDegree(realPath));
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                finish();
+                                            }
+                                            subscriber.onNext(image);
+                                            subscriber.onCompleted();
+                                        }
+                                    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Bitmap>() {
+                                        @Override
+                                        public void call(Bitmap o) {
+                                            cropImageView.setImageBitmap(o);
+                                            hideProgressDialog();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
             });
             dialogBuilder.setNegativeButton(R.string.zhimeng_activity_crop_dialog_bt2, new DialogInterface.OnClickListener() {
