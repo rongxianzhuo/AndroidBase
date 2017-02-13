@@ -168,6 +168,7 @@ public class PhotoDraweeView extends SimpleDraweeView implements IAttacher {
         mEnableDraweeMatrix = false;
         DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setCallerContext(context)
+                .setAutoPlayAnimations(true)
                 .setUri(uri)
                 .setOldController(getController())
                 .setControllerListener(new BaseControllerListener<ImageInfo>() {

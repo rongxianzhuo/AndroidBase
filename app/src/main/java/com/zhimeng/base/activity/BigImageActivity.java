@@ -31,7 +31,6 @@ public class BigImageActivity extends AppCompatActivity {
             url = getIntent().getStringExtra(URL_KEY);
         }
         catch (Exception e) {
-            Log.e("qutao", e.getMessage());
             finish();
             return;
         }
