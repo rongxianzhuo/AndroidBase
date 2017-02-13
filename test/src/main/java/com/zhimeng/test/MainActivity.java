@@ -33,7 +33,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BigImageActivity.startActivity(this, "http://avatar.csdn.net/8/7/6/1_shlock_fan.jpg");
+        BigImageActivity.startActivity(this, new String[]{"http://s1.dwstatic.com/group1/M00/D1/58/df2ffd7f8fcbfaab40a080ecee228313.gif", "http://avatar.csdn.net/8/7/6/1_shlock_fan.jpg", "http://s1.dwstatic.com/group1/M00/D1/58/df2ffd7f8fcbfaab40a080ecee228313.gif", "http://avatar.csdn.net/8/7/6/1_shlock_fan.jpg"}, 1);
         //BigImageActivity.startActivity(this, "http://s1.dwstatic.com/group1/M00/D1/58/df2ffd7f8fcbfaab40a080ecee228313.gif");
 /*
         DraweeController controller = Fresco.newDraweeControllerBuilder()

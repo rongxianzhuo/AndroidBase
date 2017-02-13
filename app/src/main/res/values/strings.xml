@@ -38,4 +38,10 @@
     <!-- string for FileSelectActivity -->
     <string name="zhimeng_activity_file_select_toolbar_title">Select File</string>
 
+    <!-- string for BigImageActivity -->
+    <string name="zhimeng_activity_big_image_previous">Previous</string>
+    <string name="zhimeng_activity_big_image_next">Next</string>
+    <string name="zhimeng_activity_big_image_first_image">First image</string>
+    <string name="zhimeng_activity_big_image_final_image">Final image</string>
+
 </resources>

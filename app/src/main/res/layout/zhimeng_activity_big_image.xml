@@ -1,13 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#000000">
 
     <com.zhimeng.base.view.pdview.PhotoDraweeView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/zoom_view"/>
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/zhimeng_activity_big_image_previous"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:layout_weight="1"
+            android:onClick="previous_click"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/zhimeng_activity_big_image_next"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:layout_weight="1"
+            android:onClick="next_click"/>
+
+    </LinearLayout>
+
+</LinearLayout>
