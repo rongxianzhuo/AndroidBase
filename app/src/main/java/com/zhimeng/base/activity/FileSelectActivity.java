@@ -109,6 +109,7 @@ public class FileSelectActivity extends BaseActivity {
 
         private static ArrayList<File> removeEmptyDirectory(File[] files) {
             ArrayList<File> list = new ArrayList<>();
+            if (files == null) return list;
             for (File f : files) if (!f.isHidden()) if (f.isFile() && isCorrectFile(f) || f.isDirectory() && f.listFiles().length > 0) list.add(f);
             return list;
         }
