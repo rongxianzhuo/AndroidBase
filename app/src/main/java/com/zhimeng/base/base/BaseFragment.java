@@ -90,7 +90,7 @@ public class BaseFragment extends Fragment {
      * @param runnable 更新线程的操作
      */
     public void postUiRunnable(Runnable runnable) {
-        if (isRunningForeground) runnable.run();
+        if (isRunningForeground) getActivity().runOnUiThread(runnable);
         else uiUpdateList.add(runnable);
     }
 

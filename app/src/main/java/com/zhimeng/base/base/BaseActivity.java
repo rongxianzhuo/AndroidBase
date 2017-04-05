@@ -167,7 +167,7 @@ public class BaseActivity extends AppCompatActivity {
      * @param runnable 更新线程的操作
      */
     public void postUiRunnable(Runnable runnable) {
-        if (isRunningForeground) runnable.run();
+        if (isRunningForeground) runOnUiThread(runnable);
         else uiUpdateList.add(runnable);
     }
 
